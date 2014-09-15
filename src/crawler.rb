@@ -2,7 +2,7 @@ require 'monitor'
 require 'thread'
 require_relative 'link_processor'
 require_relative 'page'
-require_relative 'page_link_processor'
+require_relative 'page_link_extractor'
 
 class Crawler
 
@@ -42,7 +42,7 @@ class Crawler
 
 
   def process_page_links(downloadedPage, link)
-    pageLinkProcessor = PageLinkProcessor.new(@urlsToFilter)
+    pageLinkProcessor = PageLinkExtractor.new(@urlsToFilter)
     links = pageLinkProcessor.extract_page_links_within_given_domain(downloadedPage, link)
     update_queue_and_filter_with(links)
   end

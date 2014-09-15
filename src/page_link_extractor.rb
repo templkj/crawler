@@ -1,4 +1,4 @@
-class PageLinkProcessor
+class PageLinkExtractor
 
   def initialize(urlsToFilter)
     @urlsToFilter = urlsToFilter

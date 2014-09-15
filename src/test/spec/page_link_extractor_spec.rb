@@ -1,11 +1,11 @@
 require 'rspec'
-require_relative '../../page_link_processor'
+require_relative '../../page_link_extractor'
 require_relative '../../page'
 
-describe PageLinkProcessor do
+describe PageLinkExtractor do
   context 'given an empty url filter and a simple file' do
     before do
-      @plp = PageLinkProcessor.new(Set.new)
+      @plp = PageLinkExtractor.new(Set.new)
       file = File.open(File.join(File.dirname(__FILE__), "../fixtures/example.com-with-one-internal-link.html"), 'rb')
       @standaloneWebsite = Page.new('http://example.com', file.read)
     end
@@ -19,7 +19,7 @@ describe PageLinkProcessor do
 
   context 'given a simple file and a filter for all links' do
     before do
-      @plp = PageLinkProcessor.new(['http://example.com/resume.html'])
+      @plp = PageLinkExtractor.new(['http://example.com/resume.html'])
       file = File.open(File.join(File.dirname(__FILE__), "../fixtures/example.com-with-one-internal-link.html"), 'rb')
       @standaloneWebsite = Page.new('http://example.com', file.read)
     end
