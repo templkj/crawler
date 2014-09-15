@@ -2,6 +2,7 @@ require 'monitor'
 require 'thread'
 require_relative 'link_processor'
 require_relative 'page'
+require_relative 'page_link_processor'
 
 class Crawler
 
@@ -10,7 +11,8 @@ class Crawler
     @linkProcessor = LinkProcessor.new
     @urlsToFilter = Set.new
     @queue = Queue.new
-    queue_url(seed)
+    @queue.push(seed)
+    update_filter(seed)
   end
 
   def execute
@@ -18,21 +20,7 @@ class Crawler
 
     while(@queue.length>0) do
       link = @queue.pop
-      downloadedPage = Page.new(link, @linkProcessor.process(link))
-      pages << downloadedPage
-      downloadedPageUri = URI(link)
-      downloadedPage.links.each do |linkOnPage|
-
-        linkOnPageUri = reconstruct_relativeUrl(downloadedPageUri, linkOnPage)
-
-        if (is_to_be_processed?(downloadedPageUri, linkOnPageUri))
-          linkString = linkOnPageUri.to_s
-          @queue << linkString
-          queue_url(linkString)
-        end
-
-      end
-
+      process_page(link, pages)
     end
     pages
   end
@@ -46,36 +34,30 @@ class Crawler
 
   private
 
-  def queue_url(linkString)
-    @queue << linkString
-    update_filter(linkString)
+  def process_page(link, pages)
+    downloadedPage = Page.new(link, @linkProcessor.process(link))
+    pages << downloadedPage
+    process_page_links(downloadedPage, link)
+  end
+
+
+  def process_page_links(downloadedPage, link)
+    pageLinkProcessor = PageLinkProcessor.new(@urlsToFilter)
+    links = pageLinkProcessor.process_page_links(downloadedPage, link)
+    update_queue_and_filter_with(links)
+  end
+
+  def update_queue_and_filter_with(links)
+    links.each do |pageLink|
+      @queue.push(pageLink) unless @urlsToFilter.include?(pageLink)
+      update_filter(pageLink.to_s)
+    end
   end
 
   def update_filter(linkString)
     @urlsToFilter << linkString
     @urlsToFilter << linkString + '/' if !linkString.end_with?('/')
     @urlsToFilter << linkString[0..-1] if linkString.end_with?('/')
-  end
-
-  def is_to_be_processed?(downloadedPageUri, linkOnPageUri)
-    (linkOnPageUri.host == downloadedPageUri.host) &&
-        (linkOnPageUri.scheme == downloadedPageUri.scheme) &&
-        (!@urlsToFilter.include? linkOnPageUri.to_s)
-  end
-
-  def reconstruct_relativeUrl(uriContainingHost, linkString)
-    begin
-      newLinkUri = URI(linkString)
-      if !newLinkUri.host
-        reconstructedUri = URI(uriContainingHost.scheme + '://' + uriContainingHost.host)
-        newLinkUri = URI.join(reconstructedUri, linkString)
-      end
-      newLinkUri
-    rescue
-      warn "Unable to parse link:#{linkString} on page #{uriContainingHost}"
-      uriContainingHost
-    end
-
   end
 end
 
