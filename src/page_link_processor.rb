@@ -1,7 +1,6 @@
 class PageLinkProcessor
 
   def initialize(urlsToFilter)
-
     @urlsToFilter = urlsToFilter
   end
 
@@ -9,6 +8,7 @@ class PageLinkProcessor
     queue = Set.new
 
     downloadedPage.links.each do |linkOnPage|
+
       downloadedPageUri = URI(link)
       linkOnPageUri = reconstruct_relativeUrl(downloadedPageUri, linkOnPage)
 
