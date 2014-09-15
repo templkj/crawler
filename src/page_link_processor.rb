@@ -4,18 +4,19 @@ class PageLinkProcessor
     @urlsToFilter = urlsToFilter
   end
 
-  def process_page_links(downloadedPage, link)
+  def extract_page_links_within_given_domain(downloadedPage, downloadedFromLink)
     queue = Set.new
 
     downloadedPage.links.each do |linkOnPage|
 
-      downloadedPageUri = URI(link)
+      downloadedPageUri = URI(downloadedFromLink)
       linkOnPageUri = reconstruct_relativeUrl(downloadedPageUri, linkOnPage)
 
       if (is_to_be_processed?(downloadedPageUri, linkOnPageUri))
         linkString = linkOnPageUri.to_s
         queue << linkString
       end
+
     end
 
     queue

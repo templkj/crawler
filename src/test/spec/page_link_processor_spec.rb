@@ -11,7 +11,7 @@ describe PageLinkProcessor do
     end
 
     it 'should process the only valid url on the page' do
-      results = @plp.process_page_links(@standaloneWebsite, @standaloneWebsite.url)
+      results = @plp.extract_page_links_within_given_domain(@standaloneWebsite, @standaloneWebsite.url)
       expect(results.size).to eq(1)
       expect(results.first).to eq('http://example.com/resume.html')
     end
@@ -25,12 +25,12 @@ describe PageLinkProcessor do
     end
 
     it 'should not return anything' do
-      results = @plp.process_page_links(@standaloneWebsite, @standaloneWebsite.url)
+      results = @plp.extract_page_links_within_given_domain(@standaloneWebsite, @standaloneWebsite.url)
       expect(results.size).to eq(0)
     end
 
     it 'should return 1 link when a different domain is given for where it was downloaded from' do
-      results = @plp.process_page_links(@standaloneWebsite, 'http://twitter.com')
+      results = @plp.extract_page_links_within_given_domain(@standaloneWebsite, 'http://twitter.com')
       expect(results.size).to eq(1)
       expect(results.first).to eq("http://twitter.com/aidmcg")
 

@@ -43,7 +43,7 @@ class Crawler
 
   def process_page_links(downloadedPage, link)
     pageLinkProcessor = PageLinkProcessor.new(@urlsToFilter)
-    links = pageLinkProcessor.process_page_links(downloadedPage, link)
+    links = pageLinkProcessor.extract_page_links_within_given_domain(downloadedPage, link)
     update_queue_and_filter_with(links)
   end
 

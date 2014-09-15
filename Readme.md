@@ -21,6 +21,7 @@ horizontally scale. Probably would have gone down the multi threading route if I
 Only capturing css + images for now in the static assets, trivial to add anything via filters in Page object.
 
 Other things to consider
+- I'd probably want to make the filtering process more dynamic by passing in an collection of filters that can be executed to the PageLinkProcessor rather than just a list of urls
 - probably want to add some sort of throttling, at the moment it'll just blindy go on and hammer a server that's not responding
 - robots.txt if you want to be nice
 - The page object is immutable, however the Sets for the assets + links are not
